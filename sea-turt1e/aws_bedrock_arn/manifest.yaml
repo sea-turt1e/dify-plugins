@@ -1,0 +1,65 @@
+identity:
+  name: aws_bedrock_arn
+  author: sea-turt1e
+  label:
+    en_US: AWS Bedrock ARN
+  description:
+    en_US: AWS Bedrock model provider with ARN and custom inference ID support
+  version: 0.1.0
+  provider: aws_bedrock_arn
+  supported_model_types:
+    - llm
+  configurate_methods:
+    - customizable-model
+  provider_credential_schema:
+    credential_form_schemas:
+      - variable: aws_access_key_id
+        label:
+          en_US: Access Key ID
+        type: secret-input
+        required: true
+        placeholder:
+          en_US: Enter your AWS Access Key ID
+      - variable: aws_secret_access_key
+        label:
+          en_US: Secret Access Key
+        type: secret-input
+        required: true
+        placeholder:
+          en_US: Enter your AWS Secret Access Key
+      - variable: aws_region
+        label:
+          en_US: AWS Region
+        type: select
+        required: true
+        default: us-east-1
+        options:
+          - value: us-east-1
+            label:
+              en_US: US East (N. Virginia)
+          - value: us-west-2
+            label:
+              en_US: US West (Oregon)
+          - value: ap-northeast-1
+            label:
+              en_US: Asia Pacific (Tokyo)
+          - value: ap-southeast-1
+            label:
+              en_US: Asia Pacific (Singapore)
+          - value: eu-west-1
+            label:
+              en_US: Europe (Ireland)
+  model_credential_schema:
+    model:
+      label:
+        en_US: Model Name or ARN
+      placeholder:
+        en_US: Enter model name (e.g., anthropic.claude-3-5-sonnet-20240620-v1:0) or ARN (e.g., arn:aws:bedrock:us-east-1:123456789012:inference-profile/custom-profile)
+    credential_form_schemas:
+      - variable: model_name
+        label:
+          en_US: Model Name/ARN
+        type: text-input
+        required: true
+        placeholder:
+          en_US: Model ID or full ARN for custom inference profile
