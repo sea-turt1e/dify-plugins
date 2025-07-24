@@ -1,0 +1,28 @@
+model: aws_bedrock_arn_custom
+label:
+  en_US: AWS Bedrock Custom Model
+  zh_Hans: AWS Bedrock 自定义模型
+model_type: llm
+features:
+  - agent-thought
+model_properties:
+  context_size: 200000
+  mode: chat
+parameter_rules:
+  - name: temperature
+    use_template: temperature
+  - name: max_tokens
+    use_template: max_tokens
+  - name: top_p
+    default: 1
+    min: 0
+    max: 1
+    label:
+      en_US: Top P
+      zh_Hans: Top P
+    type: float
+pricing:
+  input: 0.003
+  output: 0.015
+  unit: "0.001"
+  currency: USD

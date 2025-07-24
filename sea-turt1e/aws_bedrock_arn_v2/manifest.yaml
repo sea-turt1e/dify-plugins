@@ -1,0 +1,35 @@
+version: 0.0.1
+type: plugin
+author: sea-turt1e
+name: aws_bedrock_arn
+label:
+  en_US: AWS Bedrock ARN
+  ja_JP: AWS Bedrock ARN
+  zh_Hans: AWS Bedrock ARN
+  pt_BR: AWS Bedrock ARN
+description:
+  en_US: AWS Bedrock model provider with ARN and custom inference ID support
+  ja_JP: ARNおよびカスタム推論IDをサポートするAWS Bedrockモデルプロバイダー
+  zh_Hans: 支持ARN和自定义推理ID的AWS Bedrock模型提供商
+  pt_BR: Provedor de modelo AWS Bedrock com suporte para ARN e ID de inferência personalizado
+icon: icon.svg
+icon_dark: icon-dark.svg
+resource:
+  memory: 268435456
+  permission: {}
+plugins:
+  models:
+    - provider/aws_plugin_v2.yaml
+meta:
+  version: 0.0.1
+  arch:
+    - amd64
+    - arm64
+  runner:
+    language: python
+    version: "3.12"
+    entrypoint: main
+  minimum_dify_version: null
+created_at: 2025-07-24T09:44:52.270053+09:00
+privacy: PRIVACY.md
+verified: false
