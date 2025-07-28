@@ -31,13 +31,31 @@ model_credential_schema:
   credential_form_schemas:
     - variable: model_name
       label:
-        en_US: Model Name/ARN
-        zh_Hans: 模型名称/ARN
+        en_US: Model Name/ID
+        zh_Hans: 模型名称/ID
       type: text-input
-      required: true
+      required: false
       placeholder:
-        en_US: Model ID or full ARN for custom inference profile
-        zh_Hans: 模型ID或自定义推理配置文件的完整ARN
+        en_US: Standard model ID (e.g., anthropic.claude-3-5-sonnet-20240620-v1:0)
+        zh_Hans: 标准模型ID（如 anthropic.claude-3-5-sonnet-20240620-v1:0）
+    - variable: model_arn
+      label:
+        en_US: Model ARN (Optional)
+        zh_Hans: 模型ARN（可选）
+      type: text-input
+      required: false
+      placeholder:
+        en_US: Full ARN for custom inference profile (arn:aws:bedrock:...)
+        zh_Hans: 自定义推理配置文件的完整ARN（arn:aws:bedrock:...）
+    - variable: inference_profile_id
+      label:
+        en_US: Inference Profile ID (Optional)
+        zh_Hans: 推理配置文件ID（可选）
+      type: text-input
+      required: false
+      placeholder:
+        en_US: Custom inference profile ID (e.g., ps*******)
+        zh_Hans: 自定义推理配置文件ID（如 ps*******）
 provider_credential_schema:
   credential_form_schemas:
     - variable: aws_access_key_id
