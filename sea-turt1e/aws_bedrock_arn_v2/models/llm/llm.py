@@ -193,14 +193,21 @@ class AWSBedrockARNLargeLanguageModel(large_language_model.LargeLanguageModel):
         else:
             # Default fallback - try to map common model names
             print(f"FORCE DEBUG: Using fallback mapping for: {model}")
-            return self._get_fallback_model_id(model)
+            resolved_model = self._get_fallback_model_id(model)
+
+            # Ensure we never return an empty string
+            # if not resolved_model:
+            #     resolved_model = "anthropic.claude-3-5-sonnet-20240620-v1:0"
+            #     print(f"FORCE DEBUG: Empty model resolved, using default: {resolved_model}")
+
+            return resolved_model
 
     def _get_fallback_model_id(self, model: str) -> str:
         """
         Get fallback model ID for common model names
         """
         fallback_mapping = {
-            "aws_bedrock_arn_custom": "",  # Use inference profile ID
+            "aws_bedrock_arn_custom": "anthropic.claude-3-5-sonnet-20240620-v1:0",  # Default to Claude 3.5 Sonnet
             "claude-3-sonnet": "anthropic.claude-3-sonnet-20240229-v1:0",
             "claude-3-haiku": "anthropic.claude-3-haiku-20240307-v1:0",
             "claude-3-opus": "anthropic.claude-3-opus-20240229-v1:0",
