@@ -35,4 +35,8 @@ if __name__ == "__main__":
     if not os.getenv("DIFY_API_KEY"):
         print("Running in standalone mode (no Dify connection)")
         print("To connect to Dify, set DIFY_API_KEY environment variable")
+    else:
+        print(f"Connecting to Dify at {os.getenv('DIFY_HOST')}:{os.getenv('DIFY_PORT')}")
+        print(f"Using API key: {os.getenv('DIFY_API_KEY')[:10]}...")
+
     plugin.run()

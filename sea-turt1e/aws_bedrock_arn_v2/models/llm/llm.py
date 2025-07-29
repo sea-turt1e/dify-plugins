@@ -67,7 +67,7 @@ class AWSBedrockARNLargeLanguageModel(large_language_model.LargeLanguageModel):
 
             client = self._create_bedrock_runtime_client(credentials)
 
-            # Simple message conversion
+            # Claude-specific message conversion
             messages = []
             system_message = ""
 
@@ -75,21 +75,21 @@ class AWSBedrockARNLargeLanguageModel(large_language_model.LargeLanguageModel):
                 if isinstance(message, SystemPromptMessage):
                     system_message = message.content
                 elif isinstance(message, UserPromptMessage):
-                    messages.append({"role": "user", "content": [{"text": message.content}]})
+                    messages.append({"role": "user", "content": message.content})
                 elif isinstance(message, AssistantPromptMessage):
-                    messages.append({"role": "assistant", "content": [{"text": message.content}]})
+                    messages.append({"role": "assistant", "content": message.content})
 
+            # Claude-specific request format
             request_body = {
+                "anthropic_version": "bedrock-2023-05-31",
+                "max_tokens": model_parameters.get("max_tokens", 1024),
+                "temperature": model_parameters.get("temperature", 0.7),
+                "top_p": model_parameters.get("top_p", 1.0),
                 "messages": messages,
-                "inferenceConfig": {
-                    "maxTokens": model_parameters.get("max_tokens", 1024),
-                    "temperature": model_parameters.get("temperature", 0.7),
-                    "topP": model_parameters.get("top_p", 1.0),
-                },
             }
 
             if system_message:
-                request_body["system"] = [{"text": system_message}]
+                request_body["system"] = system_message
 
             logger.info(f"DEBUG: About to call Bedrock with modelId: {model_name}")
             logger.info(f"DEBUG: Request body: {json.dumps(request_body, indent=2)}")
@@ -117,7 +117,7 @@ class AWSBedrockARNLargeLanguageModel(large_language_model.LargeLanguageModel):
         self, response, prompt_messages: list[PromptMessage], model_name: str
     ) -> Generator[LLMResultChunk, None, None]:
         """
-        Simple stream handler
+        Claude-specific stream handler
         """
         for event in response["body"]:
             if "chunk" in event:
@@ -125,24 +125,28 @@ class AWSBedrockARNLargeLanguageModel(large_language_model.LargeLanguageModel):
                 if "bytes" in chunk:
                     chunk_data = json.loads(chunk["bytes"].decode("utf-8"))
 
-                    if "contentBlockDelta" in chunk_data:
-                        delta = chunk_data["contentBlockDelta"]
-                        if "delta" in delta and "text" in delta["delta"]:
-                            text = delta["delta"]["text"]
-
-                            yield LLMResultChunk(
-                                model=model_name,
-                                prompt_messages=prompt_messages,
-                                delta=LLMResultChunkDelta(index=0, message=AssistantPromptMessage(content=text)),
-                            )
+                    # Handle Claude streaming format
+                    if "type" in chunk_data:
+                        if chunk_data["type"] == "content_block_delta":
+                            if "delta" in chunk_data and "text" in chunk_data["delta"]:
+                                text = chunk_data["delta"]["text"]
+                                yield LLMResultChunk(
+                                    model=model_name,
+                                    prompt_messages=prompt_messages,
+                                    delta=LLMResultChunkDelta(index=0, message=AssistantPromptMessage(content=text)),
+                                )
+                        elif chunk_data["type"] == "content_block_start":
+                            # Handle start of content block if needed
+                            pass
 
     def _simple_response_handler(self, response, prompt_messages: list[PromptMessage], model_name: str) -> LLMResult:
         """
-        Simple response handler
+        Claude-specific response handler
         """
         response_body = json.loads(response["body"].read())
         content = ""
 
+        # Handle Claude response format
         if "content" in response_body:
             for content_block in response_body["content"]:
                 if "text" in content_block:
@@ -196,7 +200,7 @@ class AWSBedrockARNLargeLanguageModel(large_language_model.LargeLanguageModel):
         Get fallback model ID for common model names
         """
         fallback_mapping = {
-            "aws_bedrock_arn_custom": "anthropic.claude-3-haiku-20240307-v1:0",  # Default to Claude 3 Haiku (more accessible)
+            "aws_bedrock_arn_custom": "",  # Use inference profile ID
             "claude-3-sonnet": "anthropic.claude-3-sonnet-20240229-v1:0",
             "claude-3-haiku": "anthropic.claude-3-haiku-20240307-v1:0",
             "claude-3-opus": "anthropic.claude-3-opus-20240229-v1:0",
